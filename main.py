@@ -1,4 +1,3 @@
-
 from telebot import TeleBot, types
 import json
 import os
@@ -74,5 +73,13 @@ def send_vip_offer(message):
 @bot.message_handler(func=lambda message: True)
 def track_users(message):
     save_user(message.from_user.id)
+
+    # Auto-forward all user messages to admin
+    if message.from_user.id != admin_id:
+        bot.forward_message(admin_id, message.chat.id, message.message_id)
+
+    # Log message to file
+    with open("log.json", "a", encoding="utf-8") as log_file:
+        log_file.write(f"{message.from_user.id} - {message.text}\n")
 
 bot.polling()
