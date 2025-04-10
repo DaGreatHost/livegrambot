@@ -89,7 +89,7 @@ def handle_admin_reply(message):
     target_user = get_original_user(reply_msg_id)
     if target_user:
         try:
-            bot.send_message(target_user, {message.text}")
+            bot.send_message(target_user, {message.text}
             bot.reply_to(message, "✅ Sent to user.")
         except Exception as e:
             bot.reply_to(message, f"❌ Failed to send: {e}")
