@@ -63,7 +63,7 @@ def send_vip_offer(message):
     mark_seen_vip(uid)
     caption = "🔥 Buy PINAY ATABS VIP access for only ₱499!\n\n🖼️ Exclusive TG channel content, full set access 👀"
     markup = types.InlineKeyboardMarkup()
-    gcash_btn = types.InlineKeyboardButton("🟡 GCash via Scan2Pay", url="https://t.me/Scan2PayBot?start=vip")
+    gcash_btn = types.InlineKeyboardButton("🟡 GCash via Scan2Pay", url="https://t.me/Scan2PayBot?startapp=Pay")
     ton_btn = types.InlineKeyboardButton("🔵 Pay via TON", url="https://app.tonkeeper.com/transfer/UQAwroBrBTSzzVYx_IXpR-R_KJ_mZQgmT7uNsUZdJ5MM68ep")
     markup.add(gcash_btn)
     markup.add(ton_btn)
