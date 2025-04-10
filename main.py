@@ -7,12 +7,13 @@ bot = TeleBot("7740611922:AAHcawCFoYGgHgd5ZjeyuZuxVGaog2l2qBk", parse_mode="Mark
 admin_id = 7712850427
 users_file = "users.json"
 seen_vip_file = "seen_vip_users.json"
+msg_map_file = "msg_map.json"
 
-# Ensure files exist
-for f in [users_file, seen_vip_file]:
+# Ensure required files exist
+for f in [users_file, seen_vip_file, msg_map_file]:
     if not os.path.exists(f):
         with open(f, "w") as file:
-            json.dump([], file)
+            json.dump({}, file) if "msg_map" in f else json.dump([], file)
 
 def save_user(user_id):
     with open(users_file, "r") as f:
@@ -34,6 +35,18 @@ def mark_seen_vip(uid):
         seen.append(str(uid))
         with open(seen_vip_file, "w") as f:
             json.dump(seen, f)
+
+def log_message_link(forwarded_msg_id, user_id):
+    with open(msg_map_file, "r") as f:
+        msg_map = json.load(f)
+    msg_map[str(forwarded_msg_id)] = user_id
+    with open(msg_map_file, "w") as f:
+        json.dump(msg_map, f)
+
+def get_original_user(reply_msg_id):
+    with open(msg_map_file, "r") as f:
+        msg_map = json.load(f)
+    return msg_map.get(str(reply_msg_id))
 
 @bot.message_handler(commands=['broadcast'])
 def broadcast(message):
@@ -63,23 +76,36 @@ def send_vip_offer(message):
     mark_seen_vip(uid)
     caption = "🔥 Buy PINAY ATABS VIP access for only ₱499!\n\n🖼️ Exclusive TG channel content, full set access 👀"
     markup = types.InlineKeyboardMarkup()
-    gcash_btn = types.InlineKeyboardButton("🟡 GCash via Scan2Pay", url="https://t.me/Scan2PayBot?startapp=Pay")
+    gcash_btn = types.InlineKeyboardButton("🟡 GCash via Scan2Pay", url="https://t.me/Scan2PayBot?startapp=UQApinayatabsVIP499")
     ton_btn = types.InlineKeyboardButton("🔵 Pay via TON", url="https://app.tonkeeper.com/transfer/UQAwroBrBTSzzVYx_IXpR-R_KJ_mZQgmT7uNsUZdJ5MM68ep")
     markup.add(gcash_btn)
     markup.add(ton_btn)
     with open("499.png", 'rb') as photo:
         bot.send_photo(message.chat.id, photo, caption=caption, reply_markup=markup)
 
+@bot.message_handler(func=lambda message: message.reply_to_message and message.from_user.id == admin_id)
+def handle_admin_reply(message):
+    reply_msg_id = message.reply_to_message.message_id
+    target_user = get_original_user(reply_msg_id)
+    if target_user:
+        try:
+            bot.send_message(target_user, f"💬 Admin:\n\n{message.text}")
+            bot.reply_to(message, "✅ Sent to user.")
+        except Exception as e:
+            bot.reply_to(message, f"❌ Failed to send: {e}")
+    else:
+        bot.reply_to(message, "⚠️ Cannot find the original user for this reply.")
+
 @bot.message_handler(func=lambda message: True)
 def track_users(message):
     save_user(message.from_user.id)
 
-    # Auto-forward all user messages to admin
     if message.from_user.id != admin_id:
-        bot.forward_message(admin_id, message.chat.id, message.message_id)
+        forwarded = bot.forward_message(admin_id, message.chat.id, message.message_id)
+        log_message_link(forwarded.message_id, message.from_user.id)
 
-    # Log message to file
-    with open("log.json", "a", encoding="utf-8") as log_file:
-        log_file.write(f"{message.from_user.id} - {message.text}\n")
+        # Optional logging
+        with open("log.json", "a", encoding="utf-8") as log_file:
+            log_file.write(f"{message.from_user.id} - {message.text}\n")
 
 bot.polling()
