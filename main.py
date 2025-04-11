@@ -112,7 +112,7 @@ def handle_admin_reply(message):
             bot.send_video_note(target_user, message.video_note.file_id)
         else:
             bot.send_message(target_user, "⚠️ Unsupported media type.")
-        bot.reply_to(message, "✅ Sent to user.")
+        
     except Exception as e:
         bot.reply_to(message, f"❌ Failed to send: {e}")
 
