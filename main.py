@@ -5,7 +5,7 @@ import os
 
 bot = TeleBot("8045785722:AAH9bROfLO0ebco7y15qksKloAS5P-CDYsw", parse_mode="Markdown")
 
-admin_id = 6347842826
+admin_id = 6347842836
 users_file = "users.json"
 seen_vip_file = "seen_vip_users.json"
 msg_map_file = "msg_map.json"
