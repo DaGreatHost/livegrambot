@@ -1,10 +1,11 @@
+
 from telebot import TeleBot, types
 import json
 import os
 
-bot = TeleBot("7740611922:AAHcawCFoYGgHgd5ZjeyuZuxVGaog2l2qBk", parse_mode="Markdown")
+bot = TeleBot("8045785722:AAH9bROfLO0ebco7y15qksKloAS5P-CDYsw", parse_mode="Markdown")
 
-admin_id = 7712850427
+admin_id = 6347842826
 users_file = "users.json"
 seen_vip_file = "seen_vip_users.json"
 msg_map_file = "msg_map.json"
@@ -126,7 +127,6 @@ def track_users(message):
         except Exception as e:
             print(f"Forward failed: {e}")
 
-        # Logging (text or media label)
         log_line = f"{message.from_user.id} - "
         if message.text:
             log_line += message.text
